@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Cardbeat/url-shortener-microservice/issues"
   },
-  "homepage": "https://github.com/Cardbeat/url-shortener-microservice#readme"
+  "homepage": "https://github.com/Cardbeat/url-shortener-microservice#readme",
+  "dependencies": {
+    "express": "^4.14.1",
+    "mongoose": "^4.8.4"
+  }
 }
