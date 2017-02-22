@@ -1,5 +1,5 @@
 const assert = require('assert');
-const urlSchema = require('../app/models/urlSchema')
+const urlSchema = require('../app/models/urlSchema');
 describe("testing api into mongoDB", () => {
   it('save url into db', () => {
     const newUrl = new urlSchema({
@@ -8,7 +8,7 @@ describe("testing api into mongoDB", () => {
     });
     
     newUrl.save().then(() => {
-      assert(newUrl.isNewa === true);
+      assert(newUrl.isNew === true);
       done();
     });
 
