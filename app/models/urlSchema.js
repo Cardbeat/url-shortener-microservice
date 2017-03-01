@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
-
-mongoose.Promise = global.Promise;
+const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
+mongoose.Promise = global.Promise;
+
 const newUrl = new Schema({
-  original_url: String,
-  short_url: String
+  original_url: {type: String, required: true},
+  short_id: {type: String, required: true, default: shortid.generate}
 });
 
 

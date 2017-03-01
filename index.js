@@ -1,52 +1,58 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const urlSchema = require('./app/models/urlSchema');
 const validUrl = require('valid-url');
-
-(function() {
-
-
-
-  "use strict";
-
-  const app = express();
-  // relearn mongoose trough net ninja
-  // try to make an actual app with post/get rotes and return the url 
-  // this one will be long but rewarding 
-
-  app.set('views', './app/views');
-  app.set('view engine', 'pug');
+const shortid =require('shortid');
+const urlSchema = require('./app/models/urlSchema');
 
 
-  app.get('/:query', (req, res) => {
-    // if url => save to db
-    // else => find in db
-    let url = req.params.query;
-    if(validUrl.isUri(url)) {
-      let newUrl = new urlSchema({
-      original_url: req.params.query,
-      short_url: '3123'
+const mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/api_development';
+const mongoOptions = {db: {safe: true}};
+const port = process.env.PORT || 3000;
+const baseUrl = process.env.BASE_URL || ('htttp://localhost:' + port + '/');
+
+
+const mongoose = require('mongoose');
+mongoose.connect(mongoUri, mongoOptions);
+mongoose.connection.on('error', err => {
+  console.error('MongoDB connection error: ' + err);
+  process.exit(-1);
+});
+
+
+const express = require('express');
+const app = express();
+app.set('port', port);
+
+
+app.get('/new/*', (req,res) => {
+  const original = req.url.replace('/new/', '');
+  if(!validUrl.isWebUri(original)) {
+    return res.json({error: "invalid URL"});
+  }
+  urlSchema.create({original_url: original}, (err, created) => {
+    if(err) return res.status(500).send(err);
+    res.json({
+      original_url: created.original_url,
+      short_url: baseUrl + created.short_id
     });
+  });
+});
+
+
+app.get('/*', (req, res) => {
+  urlSchema.findOne({short_id: req.url.slice(1)}).then( found => {
+    console.log(found);
+    console.log(mongoUri);
+    if(found) {
+      res.redirect(found.original_url);
     } else {
-      let id = req.params.query;
-      mongoose.connect('mongodb://localhost/api_development');
-      urlSchema.find({
-        short_url: id
-      }, (err, link) => {
-        if(err) throw err;
-        res.redirect(link.original_url);
-      }); 
+      res.send({ error: "No short url for this link" });
     }
   });
+});
 
-
-  app.listen(3000, () => {
-    console.log('running at 3000');
-  });
-
-
+app.listen(app.get('port'), () => {
+  console.log('Node app running at port', app.get('port'));
+});
 
 
 
-})();
 
