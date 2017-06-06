@@ -3,8 +3,8 @@ const shortid =require('shortid');
 const urlSchema = require('./app/models/urlSchema');
 
 
-const mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/api_development';
-const mongoOptions = {db: {safe: true}};
+const mongoUri = 'mongodb://shortner:shortner@ds141098.mlab.com:41098/shortner';
+const mongoOptions = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }, replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
 const port = process.env.PORT || 3000;
 const baseUrl = process.env.BASE_URL || ('htttp://localhost:' + port + '/');
 
@@ -52,7 +52,3 @@ app.get('/*', (req, res) => {
 app.listen(app.get('port'), () => {
   console.log('Node app running at port', app.get('port'));
 });
-
-
-
-
